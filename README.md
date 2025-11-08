@@ -44,8 +44,6 @@ home-assistant-selenium-docker/
 
 ## Files Description
 
-### 1. `selenium_script.py`
-
 This is the main Python script that:
 
 * Opens Chrome in headless mode.
@@ -69,41 +67,6 @@ LOGFILE = sys.argv[2] if len(sys.argv) > 2 else "/app/logs/reservation1.txt"
 
 ---
 
-### 2. `Dockerfile`
-
-This Dockerfile sets up the environment to run the Selenium script:
-
-* Base image: `python:3.11-slim`
-* Installs Chromium and all required dependencies.
-* Installs Selenium Python package.
-* Copies the `selenium_script.py` into `/app` inside the container.
-* Default command runs the script with a profile and logs.
-
-**Build Docker image:**
-
-```bash
-docker build -t selenium_ha .
-```
-
----
-
-### 3. `run.sh`
-
-Bash script to run the Selenium script inside Docker. It can be modified to run multiple profiles if needed.
-
-**Notes:**
-
-* Maps host directories for profiles and logs into the container.
-* Ensures persistent login sessions with separate profiles.
-* Multiple containers can run in parallel using different profiles.
-
----
-
-### 4. Profiles
-
-`profile1/` ... `profile5/` are optional directories to store Selenium browser session data (cookies, local storage). Using profiles allows maintaining login sessions across script runs without re-entering credentials.
-
----
 
 ## Usage
 
@@ -124,7 +87,7 @@ bash ./run.sh &
 ps aux | grep run.sh
 ```
 
-4. **Optional:** Modify `run.sh` to run multiple profiles at once for parallel reservations.
+4. **Optional:** Modify `run.sh` to launch multiple instances in parallel.
 
 ---
 

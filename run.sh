@@ -28,10 +28,8 @@ while true; do
     if [ "$DAY" -eq $TARGET_DAY ] && [ "$HOUR" -eq $TARGET_HOUR ] && [ "$MIN" -eq $TARGET_MIN ]; then
         for i in {1..5}; do
             docker run --rm \
-                -v "$SEL_DIR/profile$i:/app/profile$i" \
-                -v "$SEL_DIR/logs:/app/logs" \
                 "$DOCKER_IMAGE" \
-                python /app/selenium_script.py /app/profile$i /app/logs/reservation$i.txt &
+                python /app/selenium_script.py&
         done
 
         wait

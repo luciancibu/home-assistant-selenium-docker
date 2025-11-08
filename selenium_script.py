@@ -15,10 +15,8 @@ PASSWORD = "your-password"
 # TARGET_DAY_NAME must match the day abbreviations used on the website,
 # which are in Romanian: "Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du".
 # Changing this to English will break the day selection logic.
-TARGET_DAY_NAME = "Ma"
-TARGET_HOUR = "20:00"
-PROFILE = sys.argv[1] if len(sys.argv) > 1 else "/app/profile1"
-LOGFILE = sys.argv[2] if len(sys.argv) > 2 else "/app/logs/reservation1.txt"
+TARGET_DAY_NAME = "Vi"
+TARGET_HOUR = "14:00"
 
 DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
 
@@ -68,7 +66,6 @@ def make_reservation():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
-    options.add_argument(f"--user-data-dir={PROFILE}")
     driver = webdriver.Chrome(service=service, options=options)
     wait = WebDriverWait(driver, 20)
 
