@@ -37,6 +37,6 @@ while true; do
         wait
         sleep $((60 * 60 * 24 * 5))
     else
-        sleep 60
+        sleep 20
     fi
 done
