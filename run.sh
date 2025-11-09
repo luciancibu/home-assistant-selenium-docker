@@ -5,6 +5,7 @@
 # Runs Selenium reservation weekly at a specific day and time
 # -----------------------------------------
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MNT_DIR="/mnt/data"
 SEL_DIR="$MNT_DIR/home-assistant-selenium-docker"
 DOCKER_IMAGE="selenium_ha"
@@ -15,7 +16,7 @@ TARGET_MIN=53
 
 mkdir -p "$SEL_DIR/logs"
 
-cp -r /config/home-assistant-selenium-docker "$SEL_DIR"
+cp -r "$SCRIPT_DIR"/* "$SEL_DIR"/
 chmod +x "$SEL_DIR"/*
 
 cd "$SEL_DIR" || { echo "Failed to cd into $SEL_DIR"; exit 1; }
