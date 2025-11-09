@@ -21,14 +21,6 @@ Before running the scripts, make sure you have:
      docker --version
 ```
 
-3. **Optional:** Create directories for Selenium profiles and logs:
-```bash
-   mkdir -p /config/home-assistant-selenium-docker/logs
-   mkdir -p /config/home-assistant-selenium-docker/profile1
-   mkdir -p /config/home-assistant-selenium-docker/profile2
-   # Repeat for profile3..profile5 if needed
-
-
 ## Project Structure
 
 ```
@@ -36,8 +28,7 @@ home-assistant-selenium-docker/
 │
 ├── Dockerfile            # Dockerfile to build the container with Python, Chrome, and Selenium
 ├── selenium_script.py    # Main Python script that performs the reservation
-├── run.sh                # Bash script to run the Selenium script (single or multiple profiles)
-└── profile1/ ... profile5/  # Optional Selenium browser profiles for session management
+├── run.sh                # Bash script to run the Selenium script (single or multiple instances)
 ```
 
 ---
@@ -61,8 +52,6 @@ EMAIL = "your_email@example.com"
 PASSWORD = "your_password"
 TARGET_DAY_NAME = "Ma"  # Must be in Romanian
 TARGET_HOUR = "20:00"
-PROFILE = sys.argv[1] if len(sys.argv) > 1 else "/app/profile1"
-LOGFILE = sys.argv[2] if len(sys.argv) > 2 else "/app/logs/reservation1.txt"
 ```
 
 ---
@@ -76,7 +65,7 @@ LOGFILE = sys.argv[2] if len(sys.argv) > 2 else "/app/logs/reservation1.txt"
 docker build -t selenium_ha .
 ```
 
-2. **Run the Selenium script with a profile:**
+2. **Run the Selenium script:**
 
 ```bash
 bash ./run.sh &
@@ -94,8 +83,6 @@ ps aux | grep run.sh
 ## Notes
 
 * **Day abbreviations must remain in Romanian** for the script to properly select the target day.
-* Logs are written inside `/app/logs` inside the container.
 * Headless Chrome is used to allow running in environments without a display.
-* Ensure `/path/to/profile` directories exist and are writable for session persistence.
 
 ---
