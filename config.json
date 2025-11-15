@@ -1,0 +1,13 @@
+{
+  "name": "Selenium Reservation Server",
+  "version": "1.0",
+  "slug": "local_selenium_reservation",
+  "description": "Run Selenium reservation script",
+  "startup": "services",
+  "boot": "auto",
+  "arch": ["amd64"],
+  "map": ["config:rw"],
+  "ports": {
+    "5000/tcp": 5000
+  }
+}
