@@ -1,6 +1,6 @@
 {
   "name": "Selenium Reservation Server",
-  "version": "1.0",
+  "version": "1.1",
   "slug": "local_selenium_reservation",
   "description": "Run Selenium reservation script",
   "startup": "services",
@@ -9,5 +9,17 @@
   "map": ["config:rw"],
   "ports": {
     "5000/tcp": 5000
+  },
+
+  "options": {
+    "tokens": [
+    ],
+    "whitelist": [
+    ]
+  },
+
+  "schema": {
+    "tokens": ["str"],
+    "whitelist": ["str"]
   }
 }

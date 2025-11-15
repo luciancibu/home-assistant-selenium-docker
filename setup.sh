@@ -6,7 +6,6 @@ DEST="/data/addons/local/local_selenium_reservation"
 
 FILES=(
   "Dockerfile"
-  "README.md"
   "config.json"
   "selenium_script.py"
   "server.py"
