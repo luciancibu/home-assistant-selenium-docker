@@ -4,7 +4,17 @@ import os
 
 app = Flask(__name__)
 
-SECRET_TOKEN = "your-token
+TOKEN_WHITELIST = [
+    "your-token-1",
+    "your-token-2",
+    "your-token-3"
+]
+
+IP_WHITELIST = [
+    "192.168.x.x",  # Home Assistant Core
+    "172.30.x.x",   # Add-on internal Docker IP
+    "192.168.x.x",  # Debug machine
+]
 
 @app.route("/")
 def home():
