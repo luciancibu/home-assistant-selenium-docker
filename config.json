@@ -12,17 +12,22 @@
   },
 
   "options": {
-    "tokens": [
-    ],
-    "whitelist": [
-    ]
+    "email": "",
+    "password": "",
+    "tokens": [],
+    "whitelist": [],
+    "default_day": "Ma",
+    "default_hour": "20:00"
   },
 
   "schema": {
+    "email": "str",
+    "password": "str",
     "tokens": ["str"],
-    "whitelist": ["str"]
+    "whitelist": ["str"],
+    "default_day": "str",
+    "default_hour": "str"
   },
 
   "watchdog": "http://[HOST]:5000/health"
-
 }

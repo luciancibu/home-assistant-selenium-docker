@@ -10,6 +10,10 @@ with open("/data/options.json", "r") as f:
 
 TOKENS = opts.get("tokens", [])
 IP_WHITELIST = opts.get("whitelist", [])
+DEFAULT_DAY = opts.get("default_day")
+DEFAULT_HOUR = opts.get("default_hour")
+EMAIL = opts.get("email")
+PASSWORD = opts.get("password")
 
 @app.route("/")
 def home():
@@ -19,25 +23,29 @@ def home():
 def run_selenium():
     # Whitelist check
     client_ip = request.remote_addr
-    if client_ip not in IP_WHITELIST:
+    if IP_WHITELIST and client_ip not in IP_WHITELIST:
         return f"Forbidden: IP {client_ip} not allowed", 403
 
     # Token check
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return "Unauthorized: Missing or invalid Authorization header", 401
-    token = auth_header.split(" ")[1] # Get token
-    if token not in TOKENS:
-        return "Unauthorized: Invalid token", 401    
+    if TOKENS:
+        token = request.headers.get("X-Token")
+        if not token:
+            return "Unauthorized: Missing X-Token header", 401 # No header
+        if token not in TOKENS:
+            return "Unauthorized: Invalid token", 401    
 
-    # Get params
-    day = request.args.get("day")
-    hour = request.args.get("hour")
+    # Get params & build env
+    day = DEFAULT_DAY
+    hour = DEFAULT_HOUR
+    email = EMAIL
+    password = PASSWORD
+    
     env = os.environ.copy()
     env["TARGET_DAY_NAME"] = day
     env["TARGET_HOUR"] = hour
+    env["EMAIL"] = email
+    env["PASSWORD"] = password
 
-    # Run script
     subprocess.Popen(["python3", "/selenium_script.py"], env=env)
     return f"Selenium script started! DAY={day}, HOUR={hour}"
 

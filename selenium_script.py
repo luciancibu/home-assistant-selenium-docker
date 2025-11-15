@@ -11,11 +11,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-EMAIL = "your-email"
-PASSWORD = "your-password"
-# TARGET_DAY_NAME must match the day abbreviations used on the website,
-# which are in Romanian: "Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du".
-# Changing this to English will break the day selection logic.
+EMAIL = os.getenv("EMAIL")
+PASSWORD = os.getenv("PASSWORD")
 TARGET_DAY_NAME = os.getenv("TARGET_DAY_NAME")
 TARGET_HOUR = os.getenv("TARGET_HOUR")
 
