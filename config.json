@@ -23,10 +23,12 @@
   "schema": {
     "email": "str",
     "password": "str",
-    "tokens": ["str"],
-    "whitelist": ["str"],
     "default_day": "str",
-    "default_hour": "str"
+    "default_hour": "str",
+    
+    "tokens": ["str?"],
+    "whitelist": ["str?"]
+
   },
 
   "watchdog": "http://[HOST]:5000/health"

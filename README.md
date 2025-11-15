@@ -1,88 +1,203 @@
-# Home Assistant Selenium Football Reservation
+# Selenium Reservation Server (Home Assistant Add-on)
 
-This project automates football field reservations on [Calendis](https://www.calendis.ro) using Python and Selenium, packaged inside a Docker container. It allows you to automatically reserve football slots for a target day and time, running multiple instances if needed.
+## Overview
 
----
+Selenium Reservation Server is a Home Assistant Add-on that automates
+booking sports fields on calendis.ro using Selenium + Chromium running
+inside a Supervisor-managed container.
 
-## Prerequisites
+The add-on allows: - configuration of **email**, **password**, **day**,
+**hour** - optional **X-Token authentication** - optional **IP
+whitelist** - triggering via REST or HA Automations - safe isolation
+within HA OS
 
-Before running the scripts, make sure you have:
+------------------------------------------------------------------------
 
-1. **Access to Home Assistant terminal via SSH**  
-   - Install the SSH & Web Terminal add-on in Home Assistant.
-   - Configure a user and password for SSH access.
-   - Ensure you can open a terminal to run commands like `docker` and `bash`.
+# Features
 
-2. **Docker installed on Home Assistant**  
-   - Home Assistant OS includes Docker by default.
+-   Full UI configuration
+-   Environment variables passed automatically into Selenium
+-   Optional security (tokens + IP whitelist)
+-   Watchdog health endpoint
+-   Can be triggered manually or via automations
+-   Auto-install via `setup.sh`
 
-   - Verify Docker is working:
-```bash
-     docker --version
+------------------------------------------------------------------------
+
+# Folder Structure
+
+    local_selenium_reservation/
+     ├── Dockerfile
+     ├── server.py
+     ├── selenium_script.py
+     └── config.json
+
+------------------------------------------------------------------------
+
+# Automatic Installation (setup.sh)
+
+This repository includes a **setup.sh** script that automatically
+installs the add-on into Home Assistant Supervisor.
+
+### Installation Steps
+
+### 1. Clone the repository
+
+    git https://github.com/luciancibu/home-assistant-selenium-docker.git
+    cd home-assistant-selenium-docker
+
+### 2. Make the installer executable
+
+    chmod +x setup.sh
+
+### 3. Install the Add-on
+
+    ./setup.sh
+
+What this script does: - creates
+`/data/addons/local/local_selenium_reservation/` inside Supervisor -
+copies Dockerfile, server.py, selenium_script.py, config.json - sets
+correct permissions - reloads local add-ons - restarts Supervisor -
+makes the add-on appear in HA UI
+
+### Uninstallation
+
+    ./setup.sh remove
+
+This will: - stop the add-on - uninstall it - remove old folders -
+restart Supervisor
+
+------------------------------------------------------------------------
+
+# Installing from Home Assistant UI
+
+After running `setup.sh`, the add-on will show up inside Home Assistant.
+
+Go to:
+
+Home Assistant →  
+**Settings → Add-ons → Add-on Store → Local Add-ons → Selenium Reservation Server**
+
+Then:
+
+- Click **Install**
+- Click **Start**
+- (Optional) Enable **Start on boot**
+- (Recommended) Enable **Watchdog**, so Home Assistant can automatically restart the add-on if something crashes
+
+------------------------------------------------------------------------
+
+# Add-on Configuration (UI Options)
+
+  ----------------------------------------------------------------------------
+  Key                       Type        Required       Description
+  ------------------------- ----------- -------------- -----------------------
+  `email`                   string      yes            Calendis login email
+
+  `password`                string      yes            Calendis login password
+
+  `default_day`             string      yes            One of: `Lu`, `Ma`,
+                                                       `Mi`, `Jo`, `Vi`, `Sâ`,
+                                                       `Du`
+
+  `default_hour`            string      yes            Format HH:MM,
+                                                       e.g. `08:00`--`21:00`
+
+  `tokens`                  list        optional       List of valid tokens.
+                                                       Empty = token disabled
+
+  `whitelist`               list        optional       IP whitelist. Empty =
+                                                       all IPs allowed
+  ----------------------------------------------------------------------------
+
+### Token optional
+
+If `tokens: []`, `/run` works without a token.
+
+### Whitelist optional
+
+If `whitelist: []`, all IPs can call `/run`.
+
+------------------------------------------------------------------------
+
+# API Endpoints
+
+  Endpoint    Description
+  ----------- ----------------------
+  `/`         Status page
+  `/run`      Starts Selenium job
+  `/health`   Watchdog healthcheck
+
+------------------------------------------------------------------------
+
+# Triggering Selenium manually
+
+    http://<HOME_ASSISTANT_IP>:5000/run
+
+(If tokens are enabled, send header: `X-Token: <value>`)
+
+------------------------------------------------------------------------
+
+# Home Assistant Integration
+
+## 1️ **REST Command (with token authentication)**
+
+### Add token to `secrets.yaml`:
+
+    selenium_token: YOUR_SECRET_TOKEN
+
+### Add rest_command:
+
+``` yaml
+rest_command:
+  run_selenium:
+    url: "http://<HOME_ASSISTANT_IP>:5000/run"
+    method: GET
+    headers:
+      X-Token: !secret selenium_token
 ```
 
-## Project Structure
+------------------------------------------------------------------------
 
-```
-home-assistant-selenium-docker/
-│
-├── Dockerfile            # Dockerfile to build the container with Python, Chrome, and Selenium
-├── selenium_script.py    # Main Python script that performs the reservation
-├── run.sh                # Bash script to run the Selenium script (single or multiple instances)
-```
+## 2️ **REST Command (without token)**
 
----
-
-## Files Description
-
-This is the main Python script that:
-
-* Opens Chrome in headless mode.
-* Logs in to Calendis using the provided credentials.
-* Selects the target day and hour for the reservation.
-* Clicks through cookies, login prompts, and reservation confirmations.
-* Uses **Romanian day abbreviations**: `"Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du"`.
-
-**Important:** The `TARGET_DAY_NAME` must remain in Romanian. Changing it to English will break the day selection logic.
-
-**Configuration variables:**
-
-```python
-EMAIL = "your_email@example.com"
-PASSWORD = "your_password"
-TARGET_DAY_NAME = "Ma"  # Must be in Romanian
-TARGET_HOUR = "20:00"
+``` yaml
+rest_command:
+  run_selenium:
+    url: "http://<HOME_ASSISTANT_IP>:5000/run"
+    method: GET
 ```
 
----
+------------------------------------------------------------------------
 
+# Example Automation
 
-## Usage
+### With/Without token:
 
-1. **Build the Docker image:**
-
-```bash
-docker build -t selenium_ha .
+``` yaml
+alias: Secure Selenium Reservation
+trigger:
+  - platform: time
+    at: "19:55:00"
+action:
+  - service: rest_command.run_selenium
+mode: single
 ```
 
-2. **Run the Selenium script:**
+------------------------------------------------------------------------
 
-```bash
-bash ./run.sh &
-```
+# Health Check
 
-3. **Check if script is running:**
-```bash
-ps aux | grep run.sh
-```
+Supervisor monitors:
 
-4. **Optional:** Modify `run.sh` to launch multiple instances in parallel.
+    http://[HOST]:5000/health
 
----
+If down → container auto-restarts.
 
-## Notes
+------------------------------------------------------------------------
 
-* **Day abbreviations must remain in Romanian** for the script to properly select the target day.
-* Headless Chrome is used to allow running in environments without a display.
+# Debugging
 
----
+### View logs:
+
+    ha addons logs local_selenium_reservation -f
