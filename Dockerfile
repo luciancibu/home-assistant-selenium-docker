@@ -1,32 +1,13 @@
-FROM python:3.11-slim
+FROM alpine:3.18
 
-RUN apt update && apt install -y \
-    chromium \
-    chromium-driver \
-    wget \
-    unzip \
-    curl \
-    fonts-liberation \
-    libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxi6 \
-    libxtst6 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libxss1 \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache python3 py3-pip chromium chromium-chromedriver bash curl
 
-RUN pip install --no-cache-dir selenium
+RUN pip3 install --no-cache-dir flask selenium
 
-WORKDIR /app
+COPY run.sh /run.sh
+COPY server.py /server.py
+COPY selenium_script.py /selenium_script.py
 
-COPY selenium_script.py /app/selenium_script.py
+RUN chmod +x /run.sh
+
+CMD ["/run.sh"]
