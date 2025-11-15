@@ -2,6 +2,7 @@ import datetime
 import time
 import sys
 import random
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -15,8 +16,8 @@ PASSWORD = "your-password"
 # TARGET_DAY_NAME must match the day abbreviations used on the website,
 # which are in Romanian: "Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du".
 # Changing this to English will break the day selection logic.
-TARGET_DAY_NAME = "Vi"
-TARGET_HOUR = "14:00"
+TARGET_DAY_NAME = os.getenv("TARGET_DAY_NAME")
+TARGET_HOUR = os.getenv("TARGET_HOUR")
 
 DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
 

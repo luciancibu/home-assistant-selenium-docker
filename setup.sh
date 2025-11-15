@@ -46,7 +46,8 @@ if [[ "$1" == "" ]]; then
     echo "===== DONE ====="
 
 
-    elif [[ "$1" == "remove" ]]; then
+elif [[ "$1" == "remove" ]]; then
+    echo "===== REMOVE OLD FILES ===="
     ha addons stop local_selenium_reservation 2>/dev/null
     ha addons stop local_local_selenium_reservation 2>/dev/null
     ha addons stop selenium_reservation 2>/dev/null
@@ -57,6 +58,6 @@ if [[ "$1" == "" ]]; then
     docker exec -it hassio_supervisor rm -rf /data/addons/local/local_local_selenium_reservation
     docker exec -it hassio_supervisor rm -rf /data/addons/local/selenium_reservation
     ha supervisor restart
-
-
-    fi
+    sleep 10
+    echo "===== REMOVE DONE ====="
+fi
