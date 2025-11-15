@@ -10,7 +10,6 @@ FILES=(
   "config.json"
   "selenium_script.py"
   "server.py"
-  "run.sh"
 )
 
 if [[ "$1" == "" ]]; then
@@ -45,6 +44,8 @@ if [[ "$1" == "" ]]; then
     echo "===== WAIT FOR SUPERVISOR TO RESTART ===="
     sleep 10
     echo "===== DONE ====="
+
+
     elif [[ "$1" == "remove" ]]; then
     ha addons stop local_selenium_reservation 2>/dev/null
     ha addons stop local_local_selenium_reservation 2>/dev/null
