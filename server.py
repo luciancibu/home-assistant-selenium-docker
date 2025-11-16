@@ -2,6 +2,7 @@ from flask import Flask, request
 import subprocess
 import os
 import json
+import time
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ PASSWORD = opts.get("password")
 SPORT = opts.get("sport")
 LOCATION = opts.get("location")
 TIMEOUT = opts.get("timeout")
+INSTANCES = opts.get("instances")
 
 
 @app.route("/")
@@ -56,8 +58,12 @@ def run_selenium():
     env["LOCATION"] = location
     env["TIMEOUT"] = timeout
 
-    subprocess.Popen(["python3", "/selenium_script.py"], env=env)
-    return f"Selenium script started! DAY={day}, HOUR={hour}"
+    instances = int(INSTANCES)
+    for i in range(instances):
+        subprocess.Popen(["python3", "/selenium_script.py"], env=env)
+        time.sleep(2)
+        
+    return f"Selenium script started with {i} INSTANCES! DAY={day}, HOUR={hour}"
 
 @app.route("/health")
 def health():
