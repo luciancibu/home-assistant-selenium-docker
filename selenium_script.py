@@ -15,44 +15,10 @@ EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
 TIMEOUT = int(os.getenv("TIMEOUT") or 10)
-
-def validator(value, valid_value, default):
-    if value is None:
-        return default
-    value = value.strip()
-    if value == "Sa":
-        value = "Sâ"
-    if value == "":
-        return default
-    if isinstance(valid_value, dict):
-        valid_value = valid_value.keys()
-    if value not in valid_value:
-        return default
-
-    return value
-
-
-def hour_validator(value, default):
-    if value is None:
-        return default
-    value = value.strip()
-    if value == "":
-        return default
-    if value.isdigit():
-        hour = int(value)
-    else:
-        if ":" in value:
-            hour_str = value.split(":", 1)[0]
-            if not hour_str.isdigit():
-                return default
-            hour = int(hour_str)
-        else:
-            return default
-    if not (10 <= hour <= 21):
-        return default
-
-    return f"{hour:02d}:00"
- 
+TARGET_DAY_NAME = os.getenv("TARGET_DAY_NAME")
+TARGET_HOUR = os.getenv("TARGET_HOUR")
+LOCATION = os.getenv("LOCATION").lower()
+SPORT = os.getenv("SPORT").lower()
 
 LOCATION_URLS = {
     "manastur": "https://www.calendis.ro/cluj-napoca/baza-sportiva-la-terenuri-1/b",
@@ -91,17 +57,7 @@ SPORT_LINKS = {
     }
 }
 
-TARGET_DAY_NAME = validator(os.getenv("TARGET_DAY_NAME"), DAY_MAP, "Ma")
-TARGET_HOUR = hour_validator(os.getenv("TARGET_HOUR"), "20:00")
-LOCATION = validator(os.getenv("LOCATION"), LOCATION_URLS, "manastur").lower()
-
-SPORT_RAW = os.getenv("SPORT")
-SPORT = validator(SPORT_RAW, SPORT_ALIAS, "fotbal").lower()
-
 SPORT_KEY = SPORT_ALIAS.get(SPORT, "fotbal")
-
-if SPORT_KEY not in SPORT_LINKS[LOCATION]:
-    SPORT_KEY = "fotbal" 
 
 SPORT_LINK = SPORT_LINKS[LOCATION][SPORT_KEY]
 BASE_URL = LOCATION_URLS[LOCATION]
@@ -111,8 +67,6 @@ def human_delay(base=1.0, var=0.5):
     delay = base + random.uniform(-var, var)
     if delay < 0: delay = 0.2
     time.sleep(delay)
-
-
 
 def get_target_date():
     today = datetime.date.today()

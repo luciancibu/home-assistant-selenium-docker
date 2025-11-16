@@ -1,6 +1,6 @@
 {
   "name": "Selenium Reservation Server",
-  "version": "1.1",
+  "version": "1.2",
   "slug": "local_selenium_reservation",
   "description": "Run Selenium reservation script",
   "startup": "services",
@@ -14,27 +14,30 @@
   "options": {
     "email": "",
     "password": "",
+    "default_day": "Ma",
+    "default_hour": "20:00",
+    "sport": "Fotbal",
+    "location": "Manastur",
+    "timeout": "10",
     "tokens": [],
-    "whitelist": [],
-    "default_day": "Lu/Ma/Mi/Jo/Vi/Sa/Du",
-    "default_hour": "10:00-21:00",
-    "sport": "Baschet/Fotbal/Popice/Tenis/Tenis cu peretele/Tenis de masa",
-    "location": "Manastur/Gheorgheni",
-    "timeout": "10"
+    "whitelist": []
   },
 
   "schema": {
     "email": "str",
     "password": "str",
-    "default_day": "str",
-    "default_hour": "str",
-    "sport": "str",
-    "location": "str",
+
+    "default_day": "list(Lu|Ma|Mi|Jo|Vi|Sâ|Du)",
+    "default_hour": "list(10:00|11:00|12:00|13:00|14:00|15:00|16:00|17:00|18:00|19:00|20:00|21:00)",
+
+    "sport": "list(Fotbal|Baschet|Tenis|Tenis cu peretele|Pingpong|Volei|Popice|Squash)",
+
+    "location": "list(Manastur|Gheorgheni)",
+
     "timeout": "str",
-    
+
     "tokens": ["str?"],
     "whitelist": ["str?"]
-
   },
 
   "watchdog": "http://[HOST]:5000/health"
