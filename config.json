@@ -16,10 +16,10 @@
     "password": "",
     "tokens": [],
     "whitelist": [],
-    "default_day": "Ma",
-    "default_hour": "20:00",
-    "sport": "Fotbal",
-    "location": "Manastur"
+    "default_day": "Lu/Ma/Mi/Jo/Vi/Sa/Du",
+    "default_hour": "10:00-21:00",
+    "sport": "Baschet/Fotbal/Popice/Tenis/Tenis cu peretele/Tenis de masa",
+    "location": "Manastur/Gheorgheni"
   },
 
   "schema": {
