@@ -18,7 +18,8 @@
     "whitelist": [],
     "default_day": "Ma",
     "default_hour": "20:00",
-    "sport": "Fotbal"
+    "sport": "Fotbal",
+    "location": "Manastur"
   },
 
   "schema": {
@@ -27,6 +28,7 @@
     "default_day": "str",
     "default_hour": "str",
     "sport": "str",
+    "location": "str",
     
     "tokens": ["str?"],
     "whitelist": ["str?"]

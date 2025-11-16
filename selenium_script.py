@@ -13,9 +13,63 @@ from selenium.common.exceptions import TimeoutException
 
 EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
-TARGET_DAY_NAME = os.getenv("TARGET_DAY_NAME")
-TARGET_HOUR = os.getenv("TARGET_HOUR")
-SPORT = os.getenv("SPORT").lower().strip() 
+DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
+
+
+def validator(value, valid_value, default):
+    if value is None:
+        return default
+    value = value.strip()
+    if value == "Sa":
+        value = "Sâ"
+    if value == "":
+        return default
+    if isinstance(valid_value, dict):
+        valid_value = valid_value.keys()
+    if value not in valid_value:
+        return default
+
+    return value
+
+
+def hour_validator(value, default):
+    if value is None:
+        return default
+    value = value.strip()
+    if value == "":
+        return default
+    if value.isdigit():
+        hour = int(value)
+    else:
+        if ":" in value:
+            hour_str = value.split(":", 1)[0]
+            if not hour_str.isdigit():
+                return default
+            hour = int(hour_str)
+        else:
+            return default
+    if not (10 <= hour <= 21):
+        return default
+
+    return f"{hour:02d}:00"
+ 
+
+def validate_sport_for_location(sport, location, default):
+    sport = sport.lower().strip()
+    if sport in SPORT_ALIAS:
+        sport_key = SPORT_ALIAS[sport]
+    else:
+        return default
+    if sport_key in SPORT_LINKS[location]:
+        return sport_key
+
+    return default
+
+
+LOCATION_URLS = {
+    "manastur": "https://www.calendis.ro/cluj-napoca/baza-sportiva-la-terenuri-1/b",
+    "gheorgheni": "https://www.calendis.ro/cluj-napoca/baza-sportiva-gheorgheni/b"
+}
 
 SPORT_ALIAS = {
     "fotbal": "fotbal",
@@ -26,25 +80,50 @@ SPORT_ALIAS = {
     "tenis de masa": "pingpong",
     "pingpong": "pingpong",
     "volei": "volei",
+    "popice": "popice"
 }
 
 SPORT_LINKS = {
-    "fotbal": "/cluj-napoca/baza-sportiva-la-terenuri-1/fotbal-1/24478/s",
-    "baschet": "/cluj-napoca/baza-sportiva-la-terenuri-1/baschet-1/24477/s",
-    "squash": "/cluj-napoca/baza-sportiva-la-terenuri-1/squash/24479/s",
-    "tenis": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-1/24480/s",
-    "tenis_perete": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-cu-peretele-1/24481/s",
-    "pingpong": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-de-masa-1/24482/s",
-    "volei": "/cluj-napoca/baza-sportiva-la-terenuri-1/volei/24483/s",
+    "manastur": {
+        "fotbal": "/cluj-napoca/baza-sportiva-la-terenuri-1/fotbal-1/24478/s",
+        "baschet": "/cluj-napoca/baza-sportiva-la-terenuri-1/baschet-1/24477/s",
+        "squash": "/cluj-napoca/baza-sportiva-la-terenuri-1/squash/24479/s",
+        "tenis": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-1/24480/s",
+        "tenis_perete": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-cu-peretele-1/24481/s",
+        "pingpong": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-de-masa-1/24482/s",
+        "volei": "/cluj-napoca/baza-sportiva-la-terenuri-1/volei/24483/s"
+    },
+    "gheorgheni": {
+        "fotbal": "/cluj-napoca/baza-sportiva-gheorgheni/fotbal/513/s",
+        "baschet": "/cluj-napoca/baza-sportiva-gheorgheni/baschet/515/s",
+        "popice": "/cluj-napoca/baza-sportiva-gheorgheni/popice/521/s",
+        "tenis": "/cluj-napoca/baza-sportiva-gheorgheni/tenis/511/s",
+        "tenis_perete": "/cluj-napoca/baza-sportiva-gheorgheni/tenis-cu-peretele/519/s",
+        "pingpong": "/cluj-napoca/baza-sportiva-gheorgheni/tenis-de-masa/523/s"
+    }
 }
-SPORT_KEY = SPORT_ALIAS.get(SPORT)
-DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
+
+TARGET_DAY_NAME = validator(os.getenv("TARGET_DAY_NAME"), DAY_MAP, "Ma")
+TARGET_HOUR = hour_validator(os.getenv("TARGET_HOUR"), "20:00")
+LOCATION = validator(os.getenv("LOCATION"), LOCATION_URLS, "manastur").lower()
+
+SPORT_RAW = os.getenv("SPORT")
+SPORT = validator(SPORT_RAW, SPORT_ALIAS, "fotbal").lower()
+
+SPORT_KEY = SPORT_ALIAS.get(SPORT, "fotbal")
+
+if SPORT_KEY not in SPORT_LINKS[LOCATION]:
+    SPORT_KEY = "fotbal" 
+
+SPORT_LINK = SPORT_LINKS[LOCATION][SPORT_KEY]
+BASE_URL = LOCATION_URLS[LOCATION]
 
 
 def human_delay(base=1.0, var=0.5):
     delay = base + random.uniform(-var, var)
     if delay < 0: delay = 0.2
     time.sleep(delay)
+
 
 
 def get_target_date():
@@ -98,7 +177,7 @@ def make_reservation():
 
         target_btn = wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, f"//a[contains(@href, '{SPORT_LINKS[SPORT_KEY]}')]")
+                (By.XPATH, f"//a[contains(@href, '{SPORT_LINK}')]")
             )
         )        
 
