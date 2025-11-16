@@ -278,7 +278,7 @@ Version **must** match your installed Chrome.
 Extract to:
 
 ```
-C:	ools\chromedriver\chromedriver.exe
+C:Tools\chromedriver\chromedriver.exe
 ```
 
 ## 4. Install Selenium
