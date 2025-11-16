@@ -17,6 +17,10 @@ It supports:
 - Multiple parallel Selenium instances  
 - Configurable timeout + instance count from UI  
 - Optional delay between instances
+- Fully configurable behavior from the Home Assistant Add-on UI, including: target day, target hour, location, sport selection, number of Selenium instances, timeout, email, password, tokens and whitelist.
+- Meant to be triggered from a Home Assistant automation, exactly like the examples provided, so that the script starts precisely at the desired time (e.g. 19:53).
+- Automatic reservation logic for the target day two weeks ahead: the script continuously checks the selected slot (day & hour) and performs the reservation as soon as the slot becomes available for the date exactly two weeks from the selected weekday.
+For example, if you select Tuesday at 20:00 and you trigger the script on Tuesday at 19:53 through a Home Assistant automation, the script loops and refreshes until the booking for the Tuesday two weeks from now appears (usually around 19:55), and immediately performs the reservation.
 
 ---
 
@@ -255,7 +259,11 @@ rest_command:
 alias: Auto Selenium Reservation
 trigger:
   - platform: time
-    at: "19:55:00"
+    at: "19:53:00"
+condition:
+  - condition: time
+    weekday:
+      - tue
 action:
   - service: rest_command.run_selenium
 mode: single
