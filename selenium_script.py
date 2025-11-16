@@ -15,7 +15,29 @@ EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 TARGET_DAY_NAME = os.getenv("TARGET_DAY_NAME")
 TARGET_HOUR = os.getenv("TARGET_HOUR")
+SPORT = os.getenv("SPORT").lower().strip() 
 
+SPORT_ALIAS = {
+    "fotbal": "fotbal",
+    "baschet": "baschet",
+    "squash": "squash",
+    "tenis": "tenis",
+    "tenis cu peretele": "tenis_perete",
+    "tenis de masa": "pingpong",
+    "pingpong": "pingpong",
+    "volei": "volei",
+}
+
+SPORT_LINKS = {
+    "fotbal": "/cluj-napoca/baza-sportiva-la-terenuri-1/fotbal-1/24478/s",
+    "baschet": "/cluj-napoca/baza-sportiva-la-terenuri-1/baschet-1/24477/s",
+    "squash": "/cluj-napoca/baza-sportiva-la-terenuri-1/squash/24479/s",
+    "tenis": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-1/24480/s",
+    "tenis_perete": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-cu-peretele-1/24481/s",
+    "pingpong": "/cluj-napoca/baza-sportiva-la-terenuri-1/tenis-de-masa-1/24482/s",
+    "volei": "/cluj-napoca/baza-sportiva-la-terenuri-1/volei/24483/s",
+}
+SPORT_KEY = SPORT_ALIAS.get(SPORT)
 DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
 
 
@@ -68,8 +90,20 @@ def make_reservation():
     wait = WebDriverWait(driver, 20)
 
     try:
-        driver.get("https://www.calendis.ro/cluj-napoca/baza-sportiva-la-terenuri-1/fotbal-1/s")
+        driver.get("https://www.calendis.ro/cluj-napoca/baza-sportiva-la-terenuri-1/b")
         human_delay(2, 1)
+
+        driver.execute_script("window.scrollBy(0, 400);")
+        human_delay(1)
+
+        target_btn = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, f"//a[contains(@href, '{SPORT_LINKS[SPORT_KEY]}')]")
+            )
+        )        
+
+        driver.execute_script("arguments[0].click();", target_btn)
+        human_delay(2)
 
         # cookies
         try:

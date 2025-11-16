@@ -17,7 +17,8 @@
     "tokens": [],
     "whitelist": [],
     "default_day": "Ma",
-    "default_hour": "20:00"
+    "default_hour": "20:00",
+    "sport": "Fotbal"
   },
 
   "schema": {
@@ -25,6 +26,7 @@
     "password": "str",
     "default_day": "str",
     "default_hour": "str",
+    "sport": "str",
     
     "tokens": ["str?"],
     "whitelist": ["str?"]
