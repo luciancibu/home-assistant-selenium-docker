@@ -14,7 +14,7 @@ from selenium.common.exceptions import TimeoutException
 EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 DAY_MAP = {"Lu": 0, "Ma": 1, "Mi": 2, "Jo": 3, "Vi": 4, "Sâ": 5, "Du": 6}
-
+TIMEOUT = int(os.getenv("TIMEOUT") or 10)
 
 def validator(value, valid_value, default):
     if value is None:
@@ -208,7 +208,7 @@ def make_reservation():
 
         # search for slot
         slot_found = False
-        deadline = datetime.datetime.now() + datetime.timedelta(minutes=10)
+        deadline = datetime.datetime.now() + datetime.timedelta(minutes=TIMEOUT)
 
         while datetime.datetime.now() < deadline and not slot_found:
             slots = driver.find_elements(By.CSS_SELECTOR, "#appointment-slots .slot-item")

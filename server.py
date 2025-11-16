@@ -16,6 +16,7 @@ EMAIL = opts.get("email")
 PASSWORD = opts.get("password")
 SPORT = opts.get("sport")
 LOCATION = opts.get("location")
+TIMEOUT = opts.get("timeout")
 
 
 @app.route("/")
@@ -44,6 +45,7 @@ def run_selenium():
     password = PASSWORD
     sport = SPORT
     location = LOCATION
+    timeout = TIMEOUT
     
     env = os.environ.copy()
     env["TARGET_DAY_NAME"] = day
@@ -52,6 +54,7 @@ def run_selenium():
     env["PASSWORD"] = password
     env["SPORT"] = sport
     env["LOCATION"] = location
+    env["TIMEOUT"] = timeout
 
     subprocess.Popen(["python3", "/selenium_script.py"], env=env)
     return f"Selenium script started! DAY={day}, HOUR={hour}"
