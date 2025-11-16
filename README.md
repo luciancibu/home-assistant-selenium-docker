@@ -92,7 +92,7 @@ cd home-assistant-selenium-docker
 chmod +x setup.sh
 ```
 
-### 3. Run the installer
+### 3. Run the installer (see "Installation Using setup.sh" section above)
 
 ```
 ./setup.sh
@@ -106,7 +106,7 @@ This script will:
 - Restart Supervisor
 - Make the add-on appear in Home Assistant UI
 
-### Uninstall
+### Uninstall (only if you want to remove the add-on)
 
 ```
 ./setup.sh remove
