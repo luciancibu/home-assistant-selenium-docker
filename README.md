@@ -14,6 +14,9 @@ It supports:
 - IP whitelisting  
 - REST-triggered reservations  
 - Windows execution for debugging (non-HA)
+- Multiple parallel Selenium instances  
+- Configurable timeout + instance count from UI  
+- Optional delay between instances
 
 ---
 
@@ -27,7 +30,9 @@ It supports:
 - Optional **X-Token** authentication  
 - Optional **IP Whitelist**  
 - Watchdog support for auto-restart  
-- Installer script (`setup.sh`) for quick deployment  
+- Installer script (`setup.sh`)  
+- Up to 10 parallel instances  
+- Optional instance delay  
 
 ---
 
@@ -47,6 +52,27 @@ local_selenium_reservation/
 ---
 
 # Installation Using setup.sh
+
+### Important Step Before Running setup.sh
+
+Home Assistant blocks file writes to system folders unless **Protection Mode is disabled**.
+
+You must temporarily disable it:
+
+1. Go to:  
+   **Settings → Add-ons → Advanced SSH & Web Terminal**
+2. Click **Configuration**
+3. Turn **Protection mode → OFF**
+4. Save
+5. Restart the add-on
+
+This allows `setup.sh` to copy files into `/data/addons/local/`.
+
+After the add-on installs successfully and appears in the UI, you can safely **re-enable protection mode**:
+
+- Protection mode **should be turned ON again** after installation for security.
+
+---
 
 ### 1. Clone the repository
 
@@ -104,8 +130,10 @@ Then click:
 | `password`    | string | yes      | Calendis login password                                                               |
 | `default_day` | string | yes      | One of `Lu`, `Ma`, `Mi`, `Jo`, `Vi`, `Sâ`, `Du`                                       |
 | `default_hour`| string | yes      | HH:MM between `10:00`–`21:00`                                                         |
-| `location`    | string | yes      | `manastur` or `gheorgheni`                                                            |
+| `location`    | string | yes      | `Manastur` or `Gheorgheni`                                                            |
 | `sport`       | string | yes      | fotbal / tenis / volei / baschet / squash / popice / pingpong / tenis cu peretele     |
+| `timeout`     | int    | yes      | Minutes to keep searching                                                             |
+| `instances`   | int    | yes      | Number of parallel Selenium instances (1–10)                                          |
 | `tokens`      | list   | optional | List of valid X-Token headers                                                         |
 | `whitelist`   | list   | optional | Allowed IPs                                                                           |
 
@@ -278,7 +306,7 @@ Version **must** match your installed Chrome.
 Extract to:
 
 ```
-C:Tools\chromedriver\chromedriver.exe
+C:\Tools\chromedriver\chromedriver.exe
 ```
 
 ## 4. Install Selenium
