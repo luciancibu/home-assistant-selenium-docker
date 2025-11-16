@@ -54,18 +54,6 @@ def hour_validator(value, default):
     return f"{hour:02d}:00"
  
 
-def validate_sport_for_location(sport, location, default):
-    sport = sport.lower().strip()
-    if sport in SPORT_ALIAS:
-        sport_key = SPORT_ALIAS[sport]
-    else:
-        return default
-    if sport_key in SPORT_LINKS[location]:
-        return sport_key
-
-    return default
-
-
 LOCATION_URLS = {
     "manastur": "https://www.calendis.ro/cluj-napoca/baza-sportiva-la-terenuri-1/b",
     "gheorgheni": "https://www.calendis.ro/cluj-napoca/baza-sportiva-gheorgheni/b"
