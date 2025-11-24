@@ -27,6 +27,10 @@ def home():
 
 @app.route("/run", methods=["GET","POST"])
 def run_selenium():
+    try:
+        os.remove("/tmp/reservation_done")
+    except FileNotFoundError:
+        pass 
     # Whitelist check
     client_ip = request.remote_addr
     if IP_WHITELIST and client_ip not in IP_WHITELIST:
@@ -64,10 +68,8 @@ def run_selenium():
         env_copy["SELENIUM_PROFILE"] = f"/tmp/selenium-profile-{i}"
 
         subprocess.Popen(["python3", "/selenium_script.py"], env=env_copy)
-        time.sleep(5)
+        time.sleep(3)
         
-    return f"Selenium script started with {i} INSTANCES! DAY={day}, HOUR={hour}"
-
 @app.route("/health")
 def health():
     return "OK", 200

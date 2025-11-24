@@ -100,6 +100,8 @@ def select_target_day(driver, target_date):
 
 
 def make_reservation():
+    FLAG_PATH = "/tmp/reservation_done"
+
     service = Service("/usr/bin/chromedriver")
     profile = os.getenv("SELENIUM_PROFILE", "/tmp/default-profile")
     options = webdriver.ChromeOptions()
@@ -168,6 +170,10 @@ def make_reservation():
         deadline = datetime.datetime.now() + datetime.timedelta(minutes=TIMEOUT)
 
         while datetime.datetime.now() < deadline and not slot_found:
+            if os.path.exists(FLAG_PATH):
+                print("Another instance already completed the reservation. Exiting...")
+                driver.quit()
+                sys.exit(0)
             slots = driver.find_elements(By.CSS_SELECTOR, "#appointment-slots .slot-item")
             for s in slots:
                 try:
@@ -200,7 +206,8 @@ def make_reservation():
             wait.until(EC.element_to_be_clickable((By.ID, "submit-appointment"))).click()
             wait.until(EC.element_to_be_clickable((By.ID, "regulations-checkbox"))).click()
             wait.until(EC.element_to_be_clickable((By.ID, "confirm-appointment"))).click()
-            print("Reservation confirmed!")
+            open(FLAG_PATH, "w").write("done")
+            print("Reservation confirmed, flag file created!")
         except TimeoutException:
             print("Reservation not possible, slot may be taken. Script continues...")
 
