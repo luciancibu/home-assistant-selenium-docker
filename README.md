@@ -275,7 +275,7 @@ mode: single
 # Viewing Logs
 
 ```
-ha addons logs local_selenium_reservation -f
+ha addons logs local_local_selenium_reservation -f
 ```
 
 ---
