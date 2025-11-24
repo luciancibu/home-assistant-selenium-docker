@@ -61,7 +61,7 @@ def run_selenium():
     instances = int(INSTANCES)
     for i in range(instances):
         subprocess.Popen(["python3", "/selenium_script.py"], env=env)
-        time.sleep(2)
+        time.sleep(10)
         
     return f"Selenium script started with {i} INSTANCES! DAY={day}, HOUR={hour}"
 
