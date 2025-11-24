@@ -60,8 +60,11 @@ def run_selenium():
 
     instances = int(INSTANCES)
     for i in range(instances):
-        subprocess.Popen(["python3", "/selenium_script.py"], env=env)
-        time.sleep(10)
+        env_copy = env.copy()
+        env_copy["SELENIUM_PROFILE"] = f"/tmp/selenium-profile-{i}"
+
+        subprocess.Popen(["python3", "/selenium_script.py"], env=env_copy)
+        time.sleep(5)
         
     return f"Selenium script started with {i} INSTANCES! DAY={day}, HOUR={hour}"
 

@@ -101,7 +101,10 @@ def select_target_day(driver, target_date):
 
 def make_reservation():
     service = Service("/usr/bin/chromedriver")
+    profile = os.getenv("SELENIUM_PROFILE", "/tmp/default-profile")
     options = webdriver.ChromeOptions()
+    
+    options.add_argument(f"--user-data-dir={profile}")    
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
