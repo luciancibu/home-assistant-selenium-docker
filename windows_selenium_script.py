@@ -253,12 +253,16 @@ def make_reservation():
                         break
                 except:
                     continue
-
             if not slot_found:
                 human_delay(2, 1)
-                driver.refresh()
+                
+                driver.execute_script(
+                    "document.querySelector('.calendar-arrow.right-arrow').click();"
+                )
                 human_delay(2, 1)
-                select_target_day(driver, target_date)
+                driver.execute_script(
+                    "document.querySelector('.calendar-arrow.left-arrow').click();"
+                )                
 
         if not slot_found:
             return

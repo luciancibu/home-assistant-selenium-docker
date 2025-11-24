@@ -188,7 +188,6 @@ def make_reservation():
                 driver.execute_script(
                     "document.querySelector('.calendar-arrow.left-arrow').click();"
                 )                
-                select_target_day(driver, target_date)
 
         if not slot_found:
             return
