@@ -158,8 +158,8 @@ def make_reservation():
         # target day
         target_date = get_target_date()
         if not select_target_day(driver, target_date):
-            return
-
+            driver.refresh()
+            
         # search for slot
         slot_found = False
         deadline = datetime.datetime.now() + datetime.timedelta(minutes=TIMEOUT)
@@ -180,8 +180,14 @@ def make_reservation():
                     continue
             if not slot_found:
                 human_delay(2, 1)
-                driver.refresh()
+                
+                driver.execute_script(
+                    "document.querySelector('.calendar-arrow.right-arrow').click();"
+                )
                 human_delay(2, 1)
+                driver.execute_script(
+                    "document.querySelector('.calendar-arrow.left-arrow').click();"
+                )                
                 select_target_day(driver, target_date)
 
         if not slot_found:
