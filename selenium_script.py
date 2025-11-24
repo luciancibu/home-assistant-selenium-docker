@@ -57,7 +57,7 @@ SPORT_LINKS = {
     }
 }
 
-SPORT_KEY = SPORT_ALIAS.get(SPORT, "fotbal")
+SPORT_KEY = SPORT_ALIAS.get(SPORT)
 
 SPORT_LINK = SPORT_LINKS[LOCATION][SPORT_KEY]
 BASE_URL = LOCATION_URLS[LOCATION]
@@ -111,7 +111,7 @@ def make_reservation():
     wait = WebDriverWait(driver, 20)
 
     try:
-        driver.get("https://www.calendis.ro/cluj-napoca/baza-sportiva-la-terenuri-1/b")
+        driver.get(BASE_URL)
         human_delay(2, 1)
 
         driver.execute_script("window.scrollBy(0, 400);")

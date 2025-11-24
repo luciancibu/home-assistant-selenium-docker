@@ -36,7 +36,6 @@
 
     "tokens": ["str?"],
     "whitelist": ["str?"]
-  },
+  }
 
-  "watchdog": "http://[HOST]:5000/health"
 }
