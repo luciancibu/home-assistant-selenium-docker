@@ -209,6 +209,7 @@ def make_reservation():
             # Attempt to confirm reservation
             wait.until(EC.element_to_be_clickable((By.ID, "submit-appointment"))).click()
             wait.until(EC.element_to_be_clickable((By.ID, "regulations-checkbox"))).click()
+            stop_if_done(driver)
             wait.until(EC.element_to_be_clickable((By.ID, "confirm-appointment"))).click()
             open(FLAG_PATH, "w").write("done")
             print("Reservation confirmed, flag file created!")
