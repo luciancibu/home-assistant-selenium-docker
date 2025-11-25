@@ -78,6 +78,11 @@ def get_target_date():
     target = today + datetime.timedelta(days=days_ahead + 7)
     return target
 
+def stop_if_done(driver):
+    if os.path.exists("/tmp/reservation_done"):
+        print("Stopping — reservation already done by another instance.")
+        driver.quit()
+        sys.exit(0)
 
 def select_target_day(driver, target_date):
     attempts = 0
@@ -170,10 +175,7 @@ def make_reservation():
         deadline = datetime.datetime.now() + datetime.timedelta(minutes=TIMEOUT)
 
         while datetime.datetime.now() < deadline and not slot_found:
-            if os.path.exists(FLAG_PATH):
-                print("Another instance already completed the reservation. Exiting...")
-                driver.quit()
-                sys.exit(0)
+            stop_if_done(driver)
             slots = driver.find_elements(By.CSS_SELECTOR, "#appointment-slots .slot-item")
             for s in slots:
                 try:
@@ -203,6 +205,7 @@ def make_reservation():
             return
         
         try:
+            stop_if_done(driver)
             # Attempt to confirm reservation
             wait.until(EC.element_to_be_clickable((By.ID, "submit-appointment"))).click()
             wait.until(EC.element_to_be_clickable((By.ID, "regulations-checkbox"))).click()
@@ -210,6 +213,7 @@ def make_reservation():
             open(FLAG_PATH, "w").write("done")
             print("Reservation confirmed, flag file created!")
         except TimeoutException:
+            stop_if_done(driver)
             print("Reservation not possible, slot may be taken. Script continues...")
 
     finally:
