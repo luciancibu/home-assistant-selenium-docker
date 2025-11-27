@@ -63,12 +63,6 @@ SPORT_LINK = SPORT_LINKS[LOCATION][SPORT_KEY]
 BASE_URL = LOCATION_URLS[LOCATION]
 
 
-def human_delay(base=1.0, var=0.5):
-    delay = base + random.uniform(-var, var)
-    if delay < 0: delay = 0.2
-    time.sleep(delay)
-
-
 def get_target_date():
     today = datetime.date.today()
     weekday_today = today.weekday()
@@ -76,8 +70,7 @@ def get_target_date():
     days_ahead = (target_weekday - weekday_today) % 7
     if days_ahead == 0:
         days_ahead = 7
-    target = today + datetime.timedelta(days=days_ahead + 7)
-    return target
+    return today + datetime.timedelta(days=days_ahead + 7)
 
 
 def select_target_day(driver, target_date):
@@ -99,14 +92,11 @@ def select_target_day(driver, target_date):
                     return True
             except:
                 continue
-        driver.execute_script(
-            "document.querySelector('.calendar-arrow.right-arrow').click();"
-        )
+
+        driver.execute_script("document.querySelector('.calendar-arrow.right-arrow').click();")
         try:
-            WebDriverWait(driver, 3).until_not(
-                EC.text_to_be_present_in_element(
-                    (By.CSS_SELECTOR, "#appointment-slots"), "Se caută"
-                )
+            WebDriverWait(driver, 2).until_not(
+                EC.text_to_be_present_in_element((By.CSS_SELECTOR, "#appointment-slots"), "Se caută")
             )
         except:
             pass
@@ -129,14 +119,13 @@ def make_reservation():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
     driver = webdriver.Chrome(service=service, options=options)
-    wait = WebDriverWait(driver, 20)
+    wait = WebDriverWait(driver, 15)
 
     try:
         driver.get(BASE_URL)
-        driver.execute_script("window.scrollBy(0, 400);")
-        target_btn = wait.until(
-            EC.element_to_be_clickable((By.XPATH, f"//a[contains(@href, '{SPORT_LINK}')]"))
-        )
+        driver.execute_script("window.scrollTo(0, 400);")
+
+        target_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"//a[contains(@href, '{SPORT_LINK}')]")))
         driver.execute_script("arguments[0].click();", target_btn)
         # cookie
         try:
@@ -162,11 +151,7 @@ def make_reservation():
             
         target_date = get_target_date()
         select_target_day(driver, target_date)
-        # search slot
-        slot_found = False
-        deadline = datetime.datetime.now() + datetime.timedelta(minutes=10)
-            
-        # search for slot
+
         slot_found = False
         deadline = datetime.datetime.now() + datetime.timedelta(minutes=TIMEOUT)
 
@@ -177,10 +162,7 @@ def make_reservation():
                 try:
                     hour = s.find_element(By.TAG_NAME, "strong").text.strip()
                     if hour == TARGET_HOUR:
-                        driver.execute_script(
-                            "arguments[0].scrollIntoView({block: 'center'});", s
-                        )
-                        s.click()
+                        driver.execute_script("arguments[0].click();", s)
                         slot_found = True
                         break
                 except:
@@ -191,7 +173,7 @@ def make_reservation():
                     "document.querySelector('.calendar-arrow.right-arrow').click();"
                 )
                 try:
-                    WebDriverWait(driver, 3).until_not(
+                    WebDriverWait(driver, 2).until_not(
                         EC.text_to_be_present_in_element(
                             (By.CSS_SELECTOR, "#appointment-slots"), "Se caută"
                         )
@@ -204,7 +186,7 @@ def make_reservation():
                 )
 
                 try:
-                    WebDriverWait(driver, 3).until_not(
+                    WebDriverWait(driver, 2).until_not(
                         EC.text_to_be_present_in_element(
                             (By.CSS_SELECTOR, "#appointment-slots"), "Se caută"
                         )
@@ -222,8 +204,8 @@ def make_reservation():
             driver.execute_script("arguments[0].click();", btn_submit)
             chk = wait.until(EC.element_to_be_clickable((By.ID, "regulations-checkbox")))
             driver.execute_script("arguments[0].click();", chk)
-            confirm_btn = wait.until(EC.presence_of_element_located((By.ID, "confirm-appointment")))
-            wait.until(EC.element_to_be_clickable((By.ID, "confirm-appointment")))
+
+            confirm_btn = wait.until(EC.element_to_be_clickable((By.ID, "confirm-appointment")))
             driver.execute_script("arguments[0].click();", confirm_btn)
 
             open(FLAG_PATH, "w").write("done")
