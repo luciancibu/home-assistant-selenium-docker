@@ -23,6 +23,7 @@ SPORT_RAW = "Fotbal"
 
 
 def validator(value, valid_value, default):
+    """Validates if the given value exists inside `valid_value`, otherwise returns default."""
     if value is None:
         return default
     value = value.strip()
@@ -43,6 +44,7 @@ def validator(value, valid_value, default):
 
 
 def hour_validator(value, default):
+    """Validates and normalizes hour values: input can be '20' or '20:00'."""
     if value is None:
         return default
 
@@ -141,13 +143,6 @@ def select_target_day(driver, target_date):
     attempts = 0
 
     while attempts < 5:
-        try:
-            WebDriverWait(driver, 3).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.day"))
-            )
-        except:
-            pass
-
         days = driver.find_elements(By.CSS_SELECTOR, "div.day")
 
         for d in days:
@@ -156,7 +151,8 @@ def select_target_day(driver, target_date):
                 day_week = d.find_element(By.CSS_SELECTOR, "div.day-week").text.strip()
 
                 if day_nr == str(target_date.day) and day_week == TARGET_DAY_NAME:
-                    driver.execute_script("arguments[0].click();", d)
+                    d.click()
+                    human_delay(1, 0.5)
                     return True
 
             except:
@@ -165,15 +161,7 @@ def select_target_day(driver, target_date):
         driver.execute_script(
             "document.querySelector('.calendar-arrow.right-arrow').click();"
         )
-        try:
-            WebDriverWait(driver, 3).until_not(
-                EC.text_to_be_present_in_element(
-                    (By.CSS_SELECTOR, "#appointment-slots"), "Se caută"
-                )
-            )
-        except:
-            pass
-
+        human_delay(1, 0.5)
         attempts += 1
 
     return False
@@ -191,99 +179,103 @@ def make_reservation():
 
     try:
         driver.get(BASE_URL)
-        #human_delay(1)
-
+        human_delay(2, 1)
 
         driver.execute_script("window.scrollBy(0, 400);")
-        #human_delay(1)
+        human_delay(1)
+
         target_btn = wait.until(
-            EC.element_to_be_clickable((By.XPATH, f"//a[contains(@href, '{SPORT_LINK}')]"))
+            EC.element_to_be_clickable(
+                (By.XPATH, f"//a[contains(@href, '{SPORT_LINK}')]")
+            )
         )
         driver.execute_script("arguments[0].click();", target_btn)
-        #human_delay(2)
+        human_delay(2)
 
         # cookie
         try:
-            wait.until(EC.element_to_be_clickable((By.ID, "cookie-accept"))).click()
+            cookie_btn = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.ID, "cookie-accept"))
+            )
+            cookie_btn.click()
         except:
             pass
 
         # login
         try:
-            email_input = wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'input[placeholder="E-mail"]'))
+            email_input = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, 'input[placeholder="E-mail"]')
+                )
             )
+
             if email_input.is_displayed():
                 email_input.clear()
-                email_input.send_keys(EMAIL)
+                for c in EMAIL:
+                    email_input.send_keys(c)
+                    human_delay(0.1, 0.05)
 
-                password_input = driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Parolă"]')
+                password_input = driver.find_element(
+                    By.CSS_SELECTOR, 'input[placeholder="Parolă"]'
+                )
                 password_input.clear()
-                password_input.send_keys(PASSWORD)
+
+                for c in PASSWORD:
+                    password_input.send_keys(c)
+                    human_delay(0.1, 0.05)
+
                 password_input.send_keys(Keys.RETURN)
+                human_delay(2, 1)
 
         except TimeoutException:
             pass
 
         target_date = get_target_date()
-        select_target_day(driver, target_date)
+        if not select_target_day(driver, target_date):
+            return
 
         # search slot
         slot_found = False
         deadline = datetime.datetime.now() + datetime.timedelta(minutes=10)
 
         while datetime.datetime.now() < deadline and not slot_found:
-
             slots = driver.find_elements(By.CSS_SELECTOR, "#appointment-slots .slot-item")
 
             for s in slots:
                 try:
                     hour = s.find_element(By.TAG_NAME, "strong").text.strip()
                     if hour == TARGET_HOUR:
-                        driver.execute_script(
-                            "arguments[0].scrollIntoView({block: 'center'});", s
-                        )
+                        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", s)
+                        human_delay(0.5, 0.2)
                         s.click()
                         slot_found = True
+                        human_delay(1, 0.5)
                         break
                 except:
                     continue
             if not slot_found:
-
+                human_delay(2, 1)
+                
                 driver.execute_script(
                     "document.querySelector('.calendar-arrow.right-arrow').click();"
                 )
-                try:
-                    WebDriverWait(driver, 3).until_not(
-                        EC.text_to_be_present_in_element(
-                            (By.CSS_SELECTOR, "#appointment-slots"), "Se caută"
-                        )
-                    )
-                except:
-                    pass
-
+                human_delay(2, 1)
                 driver.execute_script(
                     "document.querySelector('.calendar-arrow.left-arrow').click();"
                 )
-
-                try:
-                    WebDriverWait(driver, 3).until_not(
-                        EC.text_to_be_present_in_element(
-                            (By.CSS_SELECTOR, "#appointment-slots"), "Se caută"
-                        )
-                    )
-                except:
-                    pass
-
-                select_target_day(driver, target_date)
+                select_target_day(driver, target_date)             
 
         if not slot_found:
             return
 
         # confirmation flow
-        wait.until(EC.element_to_be_clickable((By.ID, "submit-appointment"))).click()
-        wait.until(EC.element_to_be_clickable((By.ID, "regulations-checkbox"))).click()
-        wait.until(EC.element_to_be_clickable((By.ID, "confirm-appointment"))).click()
+        try:
+            wait.until(EC.element_to_be_clickable((By.ID, "submit-appointment"))).click()
+            wait.until(EC.element_to_be_clickable((By.ID, "regulations-checkbox"))).click()
+            wait.until(EC.element_to_be_clickable((By.ID, "confirm-appointment"))).click()
+
+        except TimeoutException:
+            return
 
     finally:
         driver.quit()
