@@ -1,0 +1,41 @@
+{
+  "name": "Selenium Reservation Server",
+  "version": "1.2",
+  "slug": "local_selenium_reservation",
+  "description": "Run Selenium reservation script",
+  "startup": "services",
+  "boot": "auto",
+  "arch": ["amd64"],
+  "map": ["config:rw"],
+  "ports": {
+    "5000/tcp": 5000
+  },
+
+  "options": {
+    "email": "",
+    "password": "",
+    "default_day": "Ma",
+    "default_hour": "20:00",
+    "sport": "Fotbal",
+    "location": "Manastur",
+    "timeout": "10",
+    "tokens": [],
+    "whitelist": [],
+    "instances": "3"
+  },
+
+  "schema": {
+    "email": "str",
+    "password": "str",
+    "default_day": "list(Lu|Ma|Mi|Jo|Vi|Sâ|Du)",
+    "default_hour": "list(10:00|11:00|12:00|13:00|14:00|15:00|16:00|17:00|18:00|19:00|20:00|21:00)",
+    "sport": "list(Fotbal|Baschet|Tenis|Tenis cu peretele|Pingpong|Volei|Popice|Squash)",
+    "location": "list(Manastur|Gheorgheni)",
+    "timeout": "str",
+    "instances": "list(1|2|3|4|5|6|7|8|9|10)",
+
+    "tokens": ["str?"],
+    "whitelist": ["str?"]
+  }
+
+}
