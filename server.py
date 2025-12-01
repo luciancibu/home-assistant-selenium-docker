@@ -18,6 +18,7 @@ PASSWORD = opts.get("password")
 SPORT = opts.get("sport")
 LOCATION = opts.get("location")
 TIMEOUT = opts.get("timeout")
+INSTANCES = opts.get("instances")
 
 
 @app.route("/")
@@ -62,10 +63,14 @@ def run_selenium():
         env["LOCATION"] = location
         env["TIMEOUT"] = timeout
 
-        env_copy = env.copy()
-        env_copy["SELENIUM_PROFILE"] = f"/tmp/selenium-profile-0"
-        subprocess.Popen(["python3", "/selenium_script.py"], env=env_copy)
-        return f"Selenium scripts started!)."
+        instances = int(INSTANCES)
+        for i in range(instances):
+            env_copy = env.copy()
+            env_copy["SELENIUM_PROFILE"] = f"/tmp/selenium-profile-{i}"
+
+            subprocess.Popen(["python3", "/selenium_script.py"], env=env_copy)
+            time.sleep(3)
+        return f"Selenium scripts started ({instances} instances)."
         
     except Exception as e:
         return f"Error: {str(e)}", 500

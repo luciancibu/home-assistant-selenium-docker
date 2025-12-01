@@ -20,7 +20,8 @@
     "location": "Manastur",
     "timeout": "10",
     "tokens": [],
-    "whitelist": []
+    "whitelist": [],
+    "instances": "3"
   },
 
   "schema": {
@@ -31,6 +32,7 @@
     "sport": "list(Fotbal|Baschet|Tenis|Tenis cu peretele|Pingpong|Volei|Popice|Squash)",
     "location": "list(Manastur|Gheorgheni)",
     "timeout": "str",
+    "instances": "list(1|2|3|4|5|6|7|8|9|10)",
 
     "tokens": ["str?"],
     "whitelist": ["str?"]

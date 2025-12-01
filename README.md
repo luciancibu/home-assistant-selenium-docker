@@ -14,8 +14,10 @@ It supports:
 - IP whitelisting  
 - REST-triggered reservations  
 - Windows execution for debugging (non-HA)
-- Configurable timeout from UI  
-- Fully configurable behavior from the Home Assistant Add-on UI, including: target day, target hour, location, sport selection, timeout, email, password, tokens and whitelist.
+- Multiple parallel Selenium instances  
+- Configurable timeout + instance count from UI  
+- Optional delay between instances
+- Fully configurable behavior from the Home Assistant Add-on UI, including: target day, target hour, location, sport selection, number of Selenium instances, timeout, email, password, tokens and whitelist.
 - Meant to be triggered from a Home Assistant automation, exactly like the examples provided, so that the script starts precisely at the desired time (e.g. 19:53).
 - Automatic reservation logic for the target day two weeks ahead: the script continuously checks the selected slot (day & hour) and performs the reservation as soon as the slot becomes available for the date exactly two weeks from the selected weekday.
 - For example, if you select Tuesday at 20:00 and you trigger the script on Tuesday at 19:53 through a Home Assistant automation, the script loops and refreshes until the booking for the Tuesday two weeks from now appears (usually around 19:55), and immediately performs the reservation.
@@ -34,6 +36,8 @@ It supports:
 - Optional **IP Whitelist**  
 - Watchdog support for auto-restart  
 - Installer script (`setup.sh`)  
+- Up to 10 parallel instances  
+- Optional instance delay  
 
 ---
 
@@ -134,6 +138,7 @@ Then click:
 | `location`    | string | yes      | `Manastur` or `Gheorgheni`                                                            |
 | `sport`       | string | yes      | fotbal / tenis / volei / baschet / squash / popice / pingpong / tenis cu peretele     |
 | `timeout`     | int    | yes      | Minutes to keep searching                                                             |
+| `instances`   | int    | yes      | Number of parallel Selenium instances (1–10)                                          |
 | `tokens`      | list   | optional | List of valid X-Token headers                                                         |
 | `whitelist`   | list   | optional | Allowed IPs                                                                           |
 
