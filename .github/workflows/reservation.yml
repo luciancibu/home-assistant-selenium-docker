@@ -1,0 +1,45 @@
+name: Sport Reservation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23-33/2 00 * * *"
+      # timezone: "Europe/Bucharest"
+
+jobs:
+  run-reservation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Show current time
+        run: |
+          date
+          date -u
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run script
+        env:
+          MAIN_ACCOUNT_EMAIL: ${{ secrets.MAIN_ACCOUNT_EMAIL }}
+          MAIN_ACCOUNT_PASSWORD: ${{ secrets.MAIN_ACCOUNT_PASSWORD }}
+          OTHER_ACCOUNT_1_EMAIL: ${{ secrets.OTHER_ACCOUNT_1_EMAIL }}
+          OTHER_ACCOUNT_1_PASSWORD: ${{ secrets.OTHER_ACCOUNT_1_PASSWORD }}
+          OTHER_ACCOUNT_2_EMAIL: ${{ secrets.OTHER_ACCOUNT_2_EMAIL }}
+          OTHER_ACCOUNT_2_PASSWORD: ${{ secrets.OTHER_ACCOUNT_2_PASSWORD }}
+
+          SPORT_NAME: "Fotbal"
+          SPORTS_COMPLEX: "Baza Sportivă Gheorgheni"
+
+        run: python selenium_script.py
