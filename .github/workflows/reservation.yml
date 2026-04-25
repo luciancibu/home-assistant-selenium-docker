@@ -2,8 +2,8 @@ name: Sport Reservation
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "23-33/2 00 * * *"
+ # schedule:
+   # - cron: "23-33/2 00 * * *"
       # timezone: "Europe/Bucharest"
 
 jobs:
